@@ -77,7 +77,7 @@ class Calendar:
             
             total_days += v
              
-        return total_days
+        return total_days, year
 
     def day_of_year_to_date(self, day_of_year, year):
         '''
@@ -199,4 +199,5 @@ if __name__ == '__main__':
 
     shire = Shire_Calendar()
     assert not shire.is_leap_year(1400)
-    assert shire.date_to_day_of_year('1 Lithe 1418') == 180
+    # assert shire.date_to_day_of_year('1 Lithe 1418') == 180
+    assert shire.date_to_day_of_year("Midyear's Day 1418") == (183, 1418)
