@@ -4,6 +4,7 @@ import copy
 class Calendar:
     def __init__(self):
         self.month_dict = {}
+        self.day_dict = {}
 
     def parse_date(self, date_string):
         '''
@@ -140,7 +141,8 @@ class Gregorian_Calendar(Calendar):
                 "Dec": 31,                
         }
 
-        
+        self.day_dict = {"Sat": 0, "Sun": 1, "Mon": 2, "Tue": 3,
+                    "Wed": 4, "Thu": 5, "Fri": 6}
 
 
     def date_to_weekday(self, date_string):
@@ -152,8 +154,7 @@ class Gregorian_Calendar(Calendar):
 
         month_dict = {"Jan": 13, "Feb": 14, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6,
                       "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
-        day_dict = {"Sat": 0, "Sun": 1, "Mon": 2, "Tue": 3,
-                    "Wed": 4, "Thu": 5, "Fri": 6}
+        
 
         month, day, year = self.parse_date(date_string)
 
@@ -166,7 +167,7 @@ class Gregorian_Calendar(Calendar):
         day_of_week = (d + (13 * (m + 1) // 5) + y + (y // 4) - (y // 100) +
                        (y // 400)) % 7
         
-        for day, number in day_dict.items():
+        for day, number in self.day_dict.items():
             if number == day_of_week:
                 return day
 
@@ -200,6 +201,15 @@ class Shire_Calendar(Calendar):
                 "1 Yule": 1,
         }
         
+        self.day_dict = {
+                    "Sterday": 1, 
+                    "Sunday": 2, 
+                    "Monday": 3, 
+                    "Trewsday": 4, 
+                    "Hensday": 5, 
+                    "Mersday": 6, 
+                    "Highday": 0
+                    }
 
 
     def is_leap_year(self, year):
@@ -215,7 +225,23 @@ class Shire_Calendar(Calendar):
         #   obj.date_to_weekday("Midyear"s Day, 1418")
         #   obj.date_to_weekday("Solmath 19, 1418")
         # You need to determine the form by parsing the string.
-        pass
+        month, day, year = self.parse_date(date_string)
+
+        if day == None:
+            return month
+
+        total_days, year = self.date_to_day_of_year(date_string)
+        if total_days >= 183:
+            if self.is_leap_year(year):
+                total_days -= 2
+            else:
+                total_days -= 1
+
+        day_of_week = total_days % 7
+
+        for day, number in self.day_dict.items():
+            if number == day_of_week:
+                return day
 
 #---------------------------------------------------------------------------------------------------------------
 
@@ -256,7 +282,12 @@ class Calendrier_Républicain(Calendar):
         #   obj.date_to_weekday("Messidor, 14, 1789")
         #   obj.date_to_weekday("Jour des récompenses, 14, 1789")
         # You need to determine the form by parsing the string.
-        pass
+        month, day, year = self.parse_date(date_string)
+
+        if day == None:
+            return month
+
+        
 
 #---------------------------------------------------------------------------------------------------------------
 
@@ -276,6 +307,10 @@ if __name__ == '__main__':
     assert shire.date_to_day_of_year("Midyear's Day 1418") == (183, 1418)
     assert shire.day_of_year_to_date(31, 2018) == ('Afteryule', 30, 2018)
     assert shire.day_of_year_to_date(182, 2018) == ('1 Lithe', 2018)
+    assert shire.date_to_weekday("Midyear's Day 1418") == "Midyear's Day"
+    assert shire.date_to_weekday("2 Yule 2020") == "2 Yule"
+    assert shire.date_to_weekday("Solmath 1 2020") == "Trewsday"
+    assert shire.date_to_weekday("Wedmath 1 2020") == "Trewsday"
 
     fr = Calendrier_Républicain()
     assert fr.is_leap_year(2020)
