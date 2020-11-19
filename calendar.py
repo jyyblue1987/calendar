@@ -117,14 +117,16 @@ class Calendar:
 
     def month_list(self, year):
         month_dict = copy.deepcopy(self.month_dict)
-        if self.is_leap_year(year) == True:
+        if self.is_leap_year(year) == False:
             if 'Overlithe' in month_dict:
                 del month_dict['Overlithe']
 
             if 'Jour de la Révolution' in month_dict:
                 del month_dict['Jour de la Révolution']
+        else:
             if 'Feb' in month_dict:
                 month_dict["Feb"] = 29
+
         return month_dict
 
     def day_name(self, day_of_week):
@@ -419,7 +421,7 @@ if __name__ == '__main__':
     greg = Gregorian_Calendar()
     assert greg.is_leap_year(2020)
     assert greg.day_of_year_to_date(1, 2018) == ('Jan', 1, 2018)
-    assert greg.date_to_day_of_year("Mar 1, 2020") == (60, 2020)
+    assert greg.date_to_day_of_year("Mar 1, 2020") == (61, 2020)
     assert greg.date_to_weekday("Nov 19, 2020") == 'Thu'
     
 
