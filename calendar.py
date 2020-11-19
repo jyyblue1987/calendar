@@ -117,7 +117,7 @@ class Calendar:
 
     def month_list(self, year):
         month_dict = copy.deepcopy(self.month_dict)
-        if self.is_leap_year(year) == False:
+        if self.is_leap_year(year) == True:
             if 'Overlithe' in month_dict:
                 del month_dict['Overlithe']
 
@@ -412,14 +412,19 @@ if __name__ == '__main__':
     assert fr.date_to_day_of_year("Jour de l'opinion, 1795") == (364, 1795)
     assert fr.date_to_weekday("Jour de la vertu 2020") == ""
     assert fr.date_to_weekday("Pluviôse 9 2020") == "nonidi"
+    # assert fr.day_of_year_to_date("Jour de la Révolution", 2400) == ("Jour de la Révolution", 2400)
+
+    print(fr.date_to_weekday("Jour des récompenses 2401"))
 
     greg = Gregorian_Calendar()
     assert greg.is_leap_year(2020)
     assert greg.day_of_year_to_date(1, 2018) == ('Jan', 1, 2018)
     assert greg.date_to_day_of_year("Mar 1, 2020") == (60, 2020)
     assert greg.date_to_weekday("Nov 19, 2020") == 'Thu'
+    
 
     # print(greg.date_to_day_of_year("Mar 32, 2020"))
     # print(greg.day_of_year_to_date(368, 2020))
     # print(shire.date_to_weekday("1 Yule, 1, 1418 "))
     print(shire.date_to_weekday("1 Yule, 1418 "))
+    print(shire.day_of_year_to_date(186, 2400))
