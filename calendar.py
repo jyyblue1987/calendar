@@ -48,8 +48,16 @@ class Calendar:
 
 
     def is_leap_year(self, year):
-        # Use this version for the Gregorian and French revolutionary calendars.
-        pass
+        if (year % 4 == 0):
+            if (year % 100 == 0):
+                if (year % 400 ==0):
+                    return True
+                else:
+                    return False
+            else:
+                return True
+        else:
+            return False
 
 
     def date_to_day_of_year(self, date_string):
@@ -66,6 +74,9 @@ class Calendar:
         if self.is_leap_year(year) == False:
             if 'Overlithe' in month_dict:
                 del month_dict['Overlithe']
+
+            if 'Jour de la Révolution' in month_dict:
+                del month_dict['Jour de la Révolution']
         
         total_days = 0
         for k,v in month_dict.items():
@@ -90,6 +101,8 @@ class Calendar:
         month_dict = copy.deepcopy(self.month_dict)
         if self.is_leap_year(year) == False:
             month_dict['Overlithe']
+        if 'Jour de la Révolution' in month_dict:
+            del month_dict['Jour de la Révolution']
 
         for k,v in month_dict.items():
             if total_days < day_of_year and day_of_year <= total_days + int(v):
@@ -178,7 +191,26 @@ class Calendrier_Républicain(Calendar):
         # Days at end of year: "Jour de la vertu", "Jour du génie", "Jour du travail",
         #            "Jour de l'opinion", "Jour des récompenses", "Jour de la Révolution" (leap-year only)
         #
-        pass
+        self.month_dict = {  
+                "Vendémiaire":30, 
+                "Brumaire": 30,
+                "Frimaire": 30,
+                "Nivôse": 30,
+                "Pluviôse": 30,
+                "Ventôse": 30,
+                "Germinal": 30,
+                "Floréal": 30,
+                "Prairial": 30, 
+                "Messidor": 30,
+                "Thermidor": 30,
+                "Fructidor": 30,
+                "Jour de la vertu": 1,
+                "Jour du génie": 1, 
+                "Jour du travail": 1,
+                "Jour de l'opinion": 1, 
+                "Jour des récompenses": 1, 
+                "Jour de la Révolution": 1
+        }
 
 
     def date_to_weekday(self, date_string):
@@ -206,3 +238,9 @@ if __name__ == '__main__':
     assert shire.date_to_day_of_year("Midyear's Day 1418") == (183, 1418)
     assert shire.day_of_year_to_date(31, 2018) == ('Afteryule', 30, 2018)
     assert shire.day_of_year_to_date(182, 2018) == ('1 Lithe', 2018)
+
+    fr = Calendrier_Républicain()
+    assert fr.is_leap_year(2020)
+    assert fr.date_to_day_of_year("Messidor 14, 1789") == (284, 1789)
+    assert fr.date_to_day_of_year("Jour de l'opinion, 1795") == (364, 1795)
+
