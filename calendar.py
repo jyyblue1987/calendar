@@ -70,14 +70,8 @@ class Calendar:
         # You need to determine the form by parsing the string.
         month, day, year = self.parse_date(date_string)
 
-        month_dict = copy.deepcopy(self.month_dict)
-        if self.is_leap_year(year) == False:
-            if 'Overlithe' in month_dict:
-                del month_dict['Overlithe']
+        month_dict = self.month_list(year)        
 
-            if 'Jour de la Révolution' in month_dict:
-                del month_dict['Jour de la Révolution']
-        
         total_days = 0
         for k,v in month_dict.items():
             if k == month:                
@@ -91,6 +85,8 @@ class Calendar:
              
         return total_days, year
 
+    
+
     def day_of_year_to_date(self, day_of_year, year):
         '''
         Convert day of year to date.
@@ -98,11 +94,7 @@ class Calendar:
         day_of_year = int(day_of_year)
         total_days = 0   
 
-        month_dict = copy.deepcopy(self.month_dict)
-        if self.is_leap_year(year) == False:
-            month_dict['Overlithe']
-        if 'Jour de la Révolution' in month_dict:
-            del month_dict['Jour de la Révolution']
+        month_dict = self.month_list(year)
 
         for k,v in month_dict.items():
             if total_days < day_of_year and day_of_year <= total_days + int(v):
@@ -116,13 +108,37 @@ class Calendar:
             
         return "", 0, 0
 
+    def month_list(self, year):
+        month_dict = copy.deepcopy(self.month_dict)
+        if self.is_leap_year(year) == False:
+            if 'Overlithe' in month_dict:
+                del month_dict['Overlithe']
+
+            if 'Jour de la Révolution' in month_dict:
+                del month_dict['Jour de la Révolution']
+            if 'Feb' in month_dict:
+                month_dict["Feb"] = 29
+        return month_dict
 #---------------------------------------------------------------------------------------------------------------
 
 class Gregorian_Calendar(Calendar):
     def __init__(self):
         # Days of the week: 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
         # Months: 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-        pass
+        self.month_dict = {  
+                "Jan":31, 
+                "Feb": 28,
+                "Mar": 31,
+                "Apr": 30,
+                "May": 31,
+                "Jun": 30,
+                "Jul": 31,
+                "Aug": 31,
+                "Sep": 30,
+                "Oct": 31, 
+                "Nov": 30,
+                "Dec": 31,                
+        }
 
 
     def date_to_weekday(self, date_string):
@@ -243,4 +259,8 @@ if __name__ == '__main__':
     assert fr.is_leap_year(2020)
     assert fr.date_to_day_of_year("Messidor 14, 1789") == (284, 1789)
     assert fr.date_to_day_of_year("Jour de l'opinion, 1795") == (364, 1795)
+
+    greg = Gregorian_Calendar()
+    assert greg.is_leap_year(2020)
+    assert greg.day_of_year_to_date(1, 2018) == ('Jan', 1, 2018)
 
