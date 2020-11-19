@@ -42,6 +42,8 @@ class Calendar:
                 day  = None    # Neither day or year is present (e.g., 'Midyear's Day').
                 year = None
 
+            self.is_valid_day(year, month, day)
+
             return (month, day, year)
         else:
             # This branch indicates a malformed date string.
@@ -95,6 +97,8 @@ class Calendar:
         day_of_year = int(day_of_year)
         total_days = 0   
 
+        self.is_valid_day_of_year(year, day_of_year)
+
         month_dict = self.month_list(year)
 
         for k,v in month_dict.items():
@@ -127,6 +131,32 @@ class Calendar:
                 return day
         
         return ""
+
+    def is_leap_year(self, year):
+        self.year = year
+        
+        if (self.year % 4 == 0):
+            if (self.year % 100 == 0):
+                if (self.year % 400 ==0):
+                    return True
+                else:
+                    return False
+            else:
+                return True
+        else:
+            return False
+
+    def is_valid_year(self, year):     
+        return True
+    
+    def is_valid_month(self, month):
+        return True
+    
+    def is_valid_day(self, year, month, day):        
+        return True
+            
+    def is_valid_day_of_year(self, year, day_of_year):        
+        return True
 #---------------------------------------------------------------------------------------------------------------
 
 class Gregorian_Calendar(Calendar):
@@ -176,7 +206,53 @@ class Gregorian_Calendar(Calendar):
         
         return self.day_name(day_of_week)
 
-
+    def is_valid_year(self, year):
+        if year < 0:            
+            raise ValueError(str(year) + ' Invalid Year') 
+        return True
+    
+    def is_valid_month(self, month):
+        exist = month in self.month_dict
+        if exist == False:            
+            raise ValueError(month + ' Invalid Month') 
+        return exist
+    
+    def is_valid_day(self, year, month, day):
+        if self.is_valid_year(year) == False:
+            return False
+        
+        if self.is_valid_month(month) == False:
+            return False
+      
+        month_dict= self.month_list(year)
+            
+        total_days_of_month = month_dict[month]
+        if day < 1:            
+            raise ValueError('Day cannot be less than 1')
+        
+        if day > total_days_of_month:            
+            raise ValueError('Day cannot be bigger than ' + str(total_days_of_month) 
+                             + ' of ' + str(month))
+        return True
+            
+    def is_valid_day_of_year(self, year, day_of_year):
+        if self.is_valid_year(year) == False:
+            return False
+      
+        total_days_of_year = 365
+        if self.is_leap_year(year):
+            total_days_of_year = 366
+            
+        if day_of_year < 1:
+            raise ValueError('Day of Year cannot be less than 1')
+            
+        
+        if day_of_year > total_days_of_year:
+            raise ValueError('Day of Year cannot be bigger than ' +
+                             str(total_days_of_year) + ' of ' + str(year))
+        return True
+    
+    
 #---------------------------------------------------------------------------------------------------------------
 
 class Shire_Calendar(Calendar):
@@ -348,3 +424,5 @@ if __name__ == '__main__':
     assert greg.date_to_day_of_year("Mar 1, 2020") == (60, 2020)
     assert greg.date_to_weekday("Nov 19, 2020") == 'Thu'
 
+    # print(greg.date_to_day_of_year("Mar 32, 2020"))
+    print(greg.day_of_year_to_date(368, 2020))
