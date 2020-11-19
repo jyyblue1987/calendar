@@ -120,6 +120,13 @@ class Calendar:
             if 'Feb' in month_dict:
                 month_dict["Feb"] = 29
         return month_dict
+
+    def day_name(self, day_of_week):
+        for day, number in self.day_dict.items():
+            if number == day_of_week:
+                return day
+        
+        return ""
 #---------------------------------------------------------------------------------------------------------------
 
 class Gregorian_Calendar(Calendar):
@@ -167,9 +174,7 @@ class Gregorian_Calendar(Calendar):
         day_of_week = (d + (13 * (m + 1) // 5) + y + (y // 4) - (y // 100) +
                        (y // 400)) % 7
         
-        for day, number in self.day_dict.items():
-            if number == day_of_week:
-                return day
+        return self.day_name(day_of_week)
 
 
 #---------------------------------------------------------------------------------------------------------------
@@ -239,9 +244,7 @@ class Shire_Calendar(Calendar):
 
         day_of_week = total_days % 7
 
-        for day, number in self.day_dict.items():
-            if number == day_of_week:
-                return day
+        return self.day_name(day_of_week)
 
 #---------------------------------------------------------------------------------------------------------------
 
@@ -276,6 +279,20 @@ class Calendrier_Républicain(Calendar):
                 "Jour de la Révolution": 1
         }
 
+        self.day_dict = {  
+                "primidi":1, 
+                "duodi":2, 
+                "tridi":3, 
+                "quartidi":4, 
+                "quintidi":5,
+                "sextidi":6, 
+                "septidi":7, 
+                "octidi":8, 
+                "nonidi":9, 
+                "décadi":0
+        }
+
+
 
     def date_to_weekday(self, date_string):
         # This can be called with strings such as
@@ -285,9 +302,15 @@ class Calendrier_Républicain(Calendar):
         month, day, year = self.parse_date(date_string)
 
         if day == None:
-            return month
+            return ""
 
+        total_days, year = self.date_to_day_of_year(date_string)
+        if total_days > 360:
+            return ""
         
+        day_of_week = total_days % 10
+
+        return self.day_name(day_of_week)
 
 #---------------------------------------------------------------------------------------------------------------
 
@@ -316,6 +339,8 @@ if __name__ == '__main__':
     assert fr.is_leap_year(2020)
     assert fr.date_to_day_of_year("Messidor 14, 1789") == (284, 1789)
     assert fr.date_to_day_of_year("Jour de l'opinion, 1795") == (364, 1795)
+    assert fr.date_to_weekday("Jour de la vertu 2020") == ""
+    assert fr.date_to_weekday("Pluviôse 9 2020") == "nonidi"
 
     greg = Gregorian_Calendar()
     assert greg.is_leap_year(2020)
