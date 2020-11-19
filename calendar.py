@@ -140,6 +140,8 @@ class Gregorian_Calendar(Calendar):
                 "Dec": 31,                
         }
 
+        
+
 
     def date_to_weekday(self, date_string):
         # This can be called with strings such as
@@ -147,7 +149,27 @@ class Gregorian_Calendar(Calendar):
         # and
         #   obj.date_to_weekday("Midyear"s Day, 1418")
         # You need to determine the form by parsing the string.
-        pass
+
+        month_dict = {"Jan": 13, "Feb": 14, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6,
+                      "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
+        day_dict = {"Sat": 0, "Sun": 1, "Mon": 2, "Tue": 3,
+                    "Wed": 4, "Thu": 5, "Fri": 6}
+
+        month, day, year = self.parse_date(date_string)
+
+        m = month_dict[month]
+        d = int(day)
+        y = int(year)
+        if m >= 13:
+            y = y - 1
+            
+        day_of_week = (d + (13 * (m + 1) // 5) + y + (y // 4) - (y // 100) +
+                       (y // 400)) % 7
+        
+        for day, number in day_dict.items():
+            if number == day_of_week:
+                return day
+
 
 #---------------------------------------------------------------------------------------------------------------
 
@@ -263,4 +285,6 @@ if __name__ == '__main__':
     greg = Gregorian_Calendar()
     assert greg.is_leap_year(2020)
     assert greg.day_of_year_to_date(1, 2018) == ('Jan', 1, 2018)
+    assert greg.date_to_day_of_year("Mar 1, 2020") == (60, 2020)
+    assert greg.date_to_weekday("Nov 19, 2020") == 'Thu'
 
