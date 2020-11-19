@@ -64,7 +64,8 @@ class Calendar:
 
         month_dict = copy.deepcopy(self.month_dict)
         if self.is_leap_year(year) == False:
-            del month_dict['Overlithe']
+            if 'Overlithe' in month_dict:
+                del month_dict['Overlithe']
         
         total_days = 0
         for k,v in month_dict.items():
@@ -86,16 +87,18 @@ class Calendar:
         day_of_year = int(day_of_year)
         total_days = 0   
 
-        shire_month_dict = copy.deepcopy(self.shire_month_dict)
+        month_dict = copy.deepcopy(self.month_dict)
         if self.is_leap_year(year) == False:
-            shire_month_dict['Overlithe']
+            month_dict['Overlithe']
 
-        for k,v in shire_month_dict.items():
+        for k,v in month_dict.items():
             if total_days < day_of_year and day_of_year <= total_days + int(v):
                 sub = day_of_year - total_days
-               
-                return k, sub, year
 
+                if v < 10:  # Special Days             
+                    return k, year
+                else:
+                    return k, sub, year
             total_days += int(v)
             
         return "", 0, 0
@@ -201,3 +204,5 @@ if __name__ == '__main__':
     assert not shire.is_leap_year(1400)
     # assert shire.date_to_day_of_year('1 Lithe 1418') == 180
     assert shire.date_to_day_of_year("Midyear's Day 1418") == (183, 1418)
+    assert shire.day_of_year_to_date(31, 2018) == ('Afteryule', 30, 2018)
+    assert shire.day_of_year_to_date(182, 2018) == ('1 Lithe', 2018)
